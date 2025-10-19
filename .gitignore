@@ -1,0 +1,29 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json.lck
+
+# Builds
+dist/
+out/
+*.tsbuildinfo
+
+# OS/Editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/launch.json
+.idea/
+*.swp
+
+# Env
+.env
+.env.*
+
+# v1
+meteora.ts
+graph.py
+trade.csv

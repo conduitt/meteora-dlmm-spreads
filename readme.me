@@ -1,0 +1,150 @@
+# DLMM Spreads — Meteora Probes (USD & SOL-quoted pools)
+
+Lightweight, RPC-only spread and impact probes for **Meteora DLMM** pools on Solana.  
+They fetch on-chain state, simulate BUY (USD→BASE exact-in) and SELL (BASE→USD exact-out) trades using the Meteora SDK, and measure execution quality (fees + curve impact) across trade sizes.
+
+Quotes are taken directly from the DLMM pool state, using zero slippage tolerance — capturing pool-native execution without any user-side buffers.
+
+---
+
+## Supported Pools
+
+- Works across all Meteora DLMM pools, including but not limited to:
+  - **BTC/SOL**, **cbBTC/USDC**, **JLP/SOL**, **SOL/USDC**, **TRUMP/USDC**, etc.
+- If a pool is not included yet, add its pool address and token mint addresses to the code, along with any necessary decimal overrides to ensure correct unit scaling.
+- Supports both **USDC-quoted** and **SOL-quoted** pools.
+- Automatically converts SOL-quoted notionals to USD via the Meteora SOL/USDC DLMM (binStep 4) mid-price.
+
+---
+
+## Quick Start
+
+```bash
+# 1) Install dependencies
+npm i
+
+# 2) Build
+npm run build
+```
+
+---
+
+## Usage
+
+### Example: BTC/SOL pool (SOL-quoted)
+
+```bash
+node dist/meteora_probe.js \
+  --pool 4kdxjt8pKEW4qV4ji4HANixwswDJw3Egn8L4x2BEWQqT \
+  --quoteMint So11111111111111111111111111111111111111112 \
+  --sizes 10,25,50,100,250,500,1000,2500,5000,10000 \
+  --coverage 90 \
+  --dynamicFeePct 0.0300064 \
+  --csv out/meteora_btc_sol.csv
+```
+
+### Example: cbBTC/USDC pool (USD-quoted)
+
+```bash
+node dist/meteora_probe.js \
+  --pool 7ubS3GccjhQY99AYNKXjNJqnXjaokEdfdV915xnCb96r \
+  --quoteMint EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v \
+  --coverage 90 \
+  --csv out/meteora_cbbtc_usdc.csv
+```
+
+### Example: JLP/SOL pool
+
+```bash
+node dist/meteora_probe.js \
+  --pool J2Gsg3xTDjM8UZjKdEqzBeDwitHb2Ux6TSBX5RzsE42r \
+  --quoteMint So11111111111111111111111111111111111111112 \
+  --coverage 90 \
+  --csv out/meteora_jlp_sol.csv
+```
+
+---
+
+## Flags
+
+| Flag             | Type    | Default                                         | Notes                                                                                   |
+|------------------|---------|------------------------------------------------|-----------------------------------------------------------------------------------------|
+| `--pool`         | string  | *required*                                     | DLMM lbPair address.                                                                    |
+| `--quoteMint`    | string  | *required*                                     | Quote mint (USDC or SOL).                                                               |
+| `--sizes`        | string  | `10,25,50,100,250,500,1000,2500,5000,10000`   | Comma-separated list of USD notionals.                                                 |
+| `--range`        | string  | none                                           | Range of USD notionals in format `start:end:step`. Overrides `--sizes` if both set.    |
+| `--coverage`     | number  | `24`                                           | BinArray coverage (approx. depth probed).                                              |
+| `--dynamicFeePct`| number  | `0`                                            | Dynamic per-leg fee %, e.g. `0.0300064` for 0.0300064 %.                               |
+| `--csv`          | string  | none                                           | If set, appends rows to this CSV file.                                                |
+| `--rpc`          | string  | https://api.mainnet-beta.solana.com             | Optional custom RPC.                                                                    |
+
+---
+
+## Size Semantics
+
+- Sizes are interpreted as **USD notionals** when the quote side = USDC.
+- For SOL-quoted pools, USD equivalents are computed automatically using the current Meteora SOL/USDC mid-price.
+- Use either `--sizes` to specify an explicit list of USD sizes or `--range` to specify a range with `start:end:step` format.
+
+---
+
+## Output Anatomy (Console)
+
+Each run prints:
+
+- **Pool summary:** program id, mints, decimals, tick spacing, mid, bin coverage.
+- **Roundtrip rows:** executed BUY/SELL quotes, round-trip bps, fee bps, and impact bps for each USD size.
+
+**Example**
+
+```
+RT   $10,000  mid=106571.99  buy=106659.84  sell=106523.20
+      rt=28.8410bps  fee=16.0200bps  impact=12.8210bps
+```
+
+---
+
+## CSV Schema
+
+If the `--csv` flag is set, results are appended to the specified file with columns including:
+
+- Timestamp
+- Pool address
+- Quote mint
+- USD size
+- Mid price
+- Buy price
+- Sell price
+- Round-trip spread (bps)
+- Fee spread (bps)
+- Impact spread (bps)
+- Coverage
+- Dynamic fee percentage
+- RPC endpoint used
+
+---
+
+## Interpretation
+
+- **BUY (USD→BASE exact-in)** — spends quote (USDC or SOL) to buy BASE; reports price = USD / BASE received.
+- **SELL (BASE→USD exact-out)** — sells BASE for exact USD out; price = USD / BASE spent.
+- **Roundtrip bps** — total cost of crossing the spread (fee + curve impact).
+- **Impact bps** — component excluding protocol fees.
+
+---
+
+## Limitations
+
+- Single-pool only — no routing or JIT liquidity.
+- Zero slippage tolerance (pool-native execution only).
+- Large sizes may cross uninitialized bin arrays via RPC.
+- Accurate USD quoting assumes USDC or SOL → USD conversion.
+- Extending to new pools requires adding pool addresses, token mints, and decimal overrides as needed.
+
+---
+
+## License
+
+MIT
+
+---
