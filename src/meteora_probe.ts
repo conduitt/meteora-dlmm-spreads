@@ -25,6 +25,8 @@ const CBTC_MINT = "cbbtcf3aa214zXHbiAZQwf4122FBYbraNdFqgw4iMij";
 const WBTC_MINT = "3NZ9JMVBmGAqocybic2c7LQCJScmgsAZ6vQqTDzcqmJh";
 const JLP_MINT  = "27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4";
 const TRUMP_MINT = "6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN";
+const JUP_MINT = "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN";
+const PUMP_MINT = "pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn"
 
 const SYMBOL_MAP: Record<string, string> = {
   "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v": "USDC",
@@ -32,7 +34,9 @@ const SYMBOL_MAP: Record<string, string> = {
   "3NZ9JMVBmGAqocybic2c7LQCJScmgsAZ6vQqTDzcqmJh": "WBTC",
   "cbbtcf3aa214zXHbiAZQwf4122FBYbraNdFqgw4iMij": "cbBTC",
   "27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4": "JLP",
-  "6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN": "TRUMP"
+  "6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN": "TRUMP",
+  "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN": "JUP",
+  "pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn": "PUMP",
 };
 
 // --- Pinned base per-leg fees (bps)
@@ -49,6 +53,7 @@ const PINNED_POOL_PER_LEG_BPS: Record<string, number> = {
   // USDC quoted tokens
   "7ubS3GccjhQY99AYNKXjNJqnXjaokEdfdV915xnCb96r": 4.005,   // cbBTC/USDC
   "9d9mb8kooFfaD3SctgZtkxQypkshx6ezhbKio89ixyy2": 10.0,    // TRUMP/USDC
+  "C8Gr6AUuq9hEdSYJzoEpNcdjpojPZwqG5MtQbeouNNwg": 15.0,    // JUP/SOL (binStep 80)
 };
 
 // Decimal overrides for known tokens
@@ -59,6 +64,8 @@ const DEC_OVERRIDE: Record<string, number> = {
   [WBTC_MINT]: 8,
   [JLP_MINT]: 6,
   [TRUMP_MINT]: 6,
+  [JUP_MINT]: 6,
+  [PUMP_MINT]: 6,
 };
 
 const BIN_ARRAY_SIZE = 64;
