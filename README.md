@@ -9,10 +9,9 @@ Quotes are taken directly from the DLMM pool state, using zero slippage toleranc
 
 ## Supported Pools
 
-- Works across all Meteora DLMM pools, including but not limited to:
-  - **BTC/SOL**, **cbBTC/USDC**, **JLP/SOL**, **SOL/USDC**, **TRUMP/USDC**, etc.
-- If a pool is not included yet, add its pool address and token mint addresses to the code, along with any necessary decimal overrides to ensure correct unit scaling.
+- Works across all Meteora DLMM pools, including but not limited to.
 - Supports both **USDC-quoted** and **SOL-quoted** pools.
+- If a pool is not included yet, add its pool address and token mint addresses to the code, along with any necessary decimal overrides to ensure correct unit scaling.
 - Automatically converts SOL-quoted notionals to USD via the Meteora SOL/USDC DLMM (binStep 4) mid-price.
 
 ---
@@ -50,6 +49,7 @@ node dist/meteora_probe.js \
   --pool 7ubS3GccjhQY99AYNKXjNJqnXjaokEdfdV915xnCb96r \
   --quoteMint EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v \
   --coverage 90 \
+  --dynamicFeePct 0.0300064 \
   --csv out/meteora_cbbtc_usdc.csv
 ```
 
@@ -60,6 +60,7 @@ node dist/meteora_probe.js \
   --pool J2Gsg3xTDjM8UZjKdEqzBeDwitHb2Ux6TSBX5RzsE42r \
   --quoteMint So11111111111111111111111111111111111111112 \
   --coverage 90 \
+  --dynamicFeePct 0.0300064 \
   --csv out/meteora_jlp_sol.csv
 ```
 
@@ -98,8 +99,7 @@ Each run prints:
 **Example**
 
 ```
-RT   $10,000  mid=106571.99  buy=106659.84  sell=106523.20
-      rt=28.8410bps  fee=16.0200bps  impact=12.8210bps
+RT   $10,000  mid=106571.99  buy=106659.84  sell=106523.20   rt=28.8410bps  fee=16.0200bps  impact=12.8210bps
 ```
 
 ---
@@ -141,7 +141,6 @@ If the `--csv` flag is set, results are appended to the specified file with colu
 
 - Single-pool only — no routing or JIT liquidity.
 - Zero slippage tolerance (pool-native execution only).
-- Large sizes may cross uninitialized bin arrays via RPC.
 - Accurate USD quoting assumes USDC or SOL → USD conversion.
 - Extending to new pools requires adding pool addresses, token mints, and decimal overrides as needed.
 
