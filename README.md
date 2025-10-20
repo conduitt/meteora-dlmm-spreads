@@ -104,6 +104,10 @@ RT   $10,000  mid=106571.99  buy=106659.84  sell=106523.20
 
 ---
 
+![Meteora DLMM Execution Quality](spreads.png)
+
+---
+
 ## CSV Schema
 
 If the `--csv` flag is set, results are appended to the specified file with columns including:
