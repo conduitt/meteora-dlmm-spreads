@@ -189,20 +189,23 @@ function getFeeAmount(q: any): any {
 
   const activeBin = await dlmm.getActiveBin();
   const rawMid = Number((activeBin as any).pricePerToken ?? (activeBin as any).price ?? 0);
+  // Adjust for decimal difference between base and quote tokens
+  const decimalAdjustment = Math.pow(10, baseDecs - quoteDecs);
+  const adjustedMid = rawMid * decimalAdjustment;
 
   let solUsd = 0;
   let refPriceUSDperQuote: number;
   let midUSDperBase: number;
   if (quoteMintPk.toBase58() === USDC_MINT) {
     refPriceUSDperQuote = 1.0;
-    midUSDperBase = rawMid;
+    midUSDperBase = adjustedMid;
   } else if (quoteMintPk.toBase58() === SOL_MINT) {
     solUsd = await fetchSolUsd(connection);
     refPriceUSDperQuote = solUsd;
-    midUSDperBase = solUsd * rawMid;
+    midUSDperBase = solUsd * adjustedMid;
   } else {
     refPriceUSDperQuote = 1.0;
-    midUSDperBase = rawMid;
+    midUSDperBase = adjustedMid;
   }
 
   const arraysToFetch = Math.max(2, coverage);
@@ -247,7 +250,7 @@ function getFeeAmount(q: any): any {
   console.log(`quoteMint:            ${quoteMintPk.toBase58()} (dec=${quoteDecs})`);
   console.log(`baseMint:             ${baseMint.toBase58()} (dec=${baseDecs})`);
   console.log(`binStep:              ${binStep}`);
-  console.log(`mid USD/BASE:         ${midUSDperBase.toFixed(2)}  (rawMid=${rawMid.toPrecision(6)})`);
+  console.log(`mid USD/BASE:         ${midUSDperBase.toFixed(2)}  (rawMid=${rawMid.toPrecision(6)}, adjusted=${adjustedMid.toPrecision(6)})`);
   console.log("");
 
   console.log("Roundtrip results (USD-sized):");
